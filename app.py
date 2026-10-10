@@ -383,6 +383,16 @@ try:
         progress.empty()
         status.empty()
 
+        if reached_cutoff:
+            st.success("Data coverage: Complete — reached the selected time cutoff.")
+        elif page >= total_pages:
+            st.warning("Data coverage: Reached the end of available transaction history.")
+        else:
+            st.warning(
+                f"Data coverage: INCOMPLETE — stopped at the safety limit "
+                f"of {max_pages} pages. Results may be lower than actual sales."
+            )
+
         if sales:
             item_lookup = {
                 int(item["id"]): item
