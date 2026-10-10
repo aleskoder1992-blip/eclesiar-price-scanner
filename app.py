@@ -268,32 +268,3 @@ if st.button("Scan all countries", type="primary"):
     )
 
     st.caption("Prices are live API market offers at scan time. Gold conversion is an estimate based on the currency market's best returned rate.")
-st.subheader("DEBUG — Transaction history test")
-
-try:
-    countries = get_countries()
-
-    if countries:
-        st.write("First country returned by API:")
-        st.json(countries[0])
-
-        country_id = countries[0].get("id")
-
-        if country_id is not None:
-            transactions = api_get(
-                "/country/currency-transactions",
-                {
-                    "country_id": country_id,
-                    "page": 1
-                }
-            )
-
-            st.write("Transaction response:")
-            st.json(transactions[:3] if isinstance(transactions, list) else transactions)
-        else:
-            st.warning("Could not find a country ID.")
-    else:
-        st.warning("The countries endpoint returned no data.")
-
-except Exception as e:
-    st.error(f"Transaction test failed: {e}")
