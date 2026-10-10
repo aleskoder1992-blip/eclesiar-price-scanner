@@ -79,6 +79,10 @@ def main():
             break
 
         for record in records:
+                        if not isinstance(record, dict):
+                print("Unexpected record type:", type(record).__name__)
+                print("Unexpected record value:", repr(record)[:500])
+                raise RuntimeError("Unexpected transaction record format")
             timestamp = record.get("created_at")
 
             if not timestamp:
