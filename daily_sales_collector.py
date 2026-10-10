@@ -84,10 +84,10 @@ def main():
                 print("Unexpected record value:", repr(record)[:500])
                 raise RuntimeError("Unexpected transaction record format")
 
-                    timestamp = record.get("created_at")
+            timestamp = record.get("created_at")
 
-                    if not timestamp:
-                        continue
+            if not timestamp:
+                 continue
 
             try:
                 transaction_time = datetime.fromisoformat(
