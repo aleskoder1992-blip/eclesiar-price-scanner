@@ -304,6 +304,35 @@ if st.button("Scan all countries", type="primary"):
             df["Price / Energy"] = (gold_prices / energy).round(4)
         st.subheader(f'{selected["name"]} Q{selected.get("quality")} — cheapest by country')
         st.dataframe(df, use_container_width=True, hide_index=True)
+                    # Save daily sales history to Supabase
+            if period == "Last 24 hours":
+                today = datetime.now().date().isoformat()
+
+                save_rows = [
+                    {
+                        "item_id": int(item_id),
+                        "item_name": item_lookup.get(int(item_id), {}).get(
+                            "name", f"Unknown item ({item_id})"
+                        ),
+                        "quality": item_lookup.get(int(item_id), {}).get("quality"),
+                        "units_purchased": int(quantity),
+                        "purchase_transactions": int(transactions_count[item_id])
+                    }
+                    for item_id, quantity in sales.items()
+                ]
+
+                try:
+                    saved_count = save_sales_history(
+                        save_rows,
+                        today,
+                        country_id,
+                        selected_country
+                    )
+                    st.success(
+                        f"Saved {saved_count} item records to market history."
+                    )
+                except Exception as save_error:
+                    st.error(f"Could not save sales history: {save_error}")
 
     csv = df.to_csv(index=False).encode("utf-8")
     st.download_button(
