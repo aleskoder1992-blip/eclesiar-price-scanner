@@ -123,16 +123,12 @@ def get_gold_rate(currency_id):
         "page": 1
     })
 
-    # TEMPORARY DEBUG
-        # TEMPORARY DEBUG
-    if currency_id == 35:
-        st.write("SOUTH AFRICA — ZAR currency ID:", currency_id)
+
 
     if not offers:
         return None
 
-    if currency_id == 35:
-        st.write("SOUTH AFRICA — ZAR exchange rate:", offers[0].get("rate"))
+    
 
     return float(offers[0]["rate"])
 try:
