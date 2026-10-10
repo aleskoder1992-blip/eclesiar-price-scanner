@@ -208,8 +208,7 @@ if st.button("Scan all countries", type="primary"):
 
         df["Approx. Gold / item"] = df.apply(to_gold, axis=1)
 
-   # Always rank by Gold price when Gold conversion is enabled.
-            # Sort cheapest first by Gold price
+        # Sort cheapest first by Gold price
         if do_gold and "Approx. Gold / item" in df.columns:
             df["Approx. Gold / item"] = pd.to_numeric(
                 df["Approx. Gold / item"], errors="coerce"
@@ -228,8 +227,8 @@ if st.button("Scan all countries", type="primary"):
 
         df.insert(0, "Rank", range(1, len(df) + 1))
 
-    st.subheader(f'{selected["name"]} Q{selected.get("quality")} — cheapest by country')
-    st.dataframe(df, use_container_width=True, hide_index=True)
+        st.subheader(f'{selected["name"]} Q{selected.get("quality")} — cheapest by country')
+        st.dataframe(df, use_container_width=True, hide_index=True)
 
     csv = df.to_csv(index=False).encode("utf-8")
     st.download_button(
