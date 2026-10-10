@@ -231,7 +231,14 @@ if st.button("Scan all countries", type="primary"):
             ).reset_index(drop=True)
 
         df.insert(0, "Rank", range(1, len(df) + 1))
+        # Add Energy / Gold for food only
+    if "Food" in selected["name"]:
+        energy_by_quality = {1: 10, 2: 20, 3: 30, 4: 40, 5: 50}
+        energy = energy_by_quality.get(int(selected.get("quality", 0)))
 
+        if energy and "Approx. Gold / item" in df.columns:
+            gold_prices = pd.to_numeric(df["Approx. Gold / item"], errors="coerce")
+            df["Energy / Gold"] = (energy / gold_prices).round(2)
         st.subheader(f'{selected["name"]} Q{selected.get("quality")} — cheapest by country')
         st.dataframe(df, use_container_width=True, hide_index=True)
 
