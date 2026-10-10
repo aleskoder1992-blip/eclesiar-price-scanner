@@ -78,7 +78,7 @@ def main():
         if not records:
             break
 
-                        for record in records:
+            for record in records:
             if not isinstance(record, dict):
                 print("Unexpected record type:", type(record).__name__)
                 print("Unexpected record value:", repr(record)[:500])
