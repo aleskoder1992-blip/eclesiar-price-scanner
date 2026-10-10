@@ -507,6 +507,39 @@ try:
             )
 
             st.dataframe(df_sales, use_container_width=True, hide_index=True)
+                        # Save sales results to Supabase
+            if period == "Last 24 hours":
+                save_rows = [
+                    {
+                        "item_id": int(item_id),
+                        "item_name": item_lookup.get(
+                            int(item_id), {}
+                        ).get("name", f"Unknown item ({item_id})"),
+                        "quality": item_lookup.get(
+                            int(item_id), {}
+                        ).get("quality"),
+                        "units_purchased": int(quantity),
+                        "purchase_transactions": int(
+                            transactions_count[item_id]
+                        )
+                    }
+                    for item_id, quantity in sales.items()
+                ]
+
+                try:
+                    saved_count = save_sales_history(
+                        save_rows,
+                        datetime.now().date().isoformat(),
+                        country_id,
+                        selected_country
+                    )
+                    st.success(
+                        f"Saved {saved_count} item records to Supabase."
+                    )
+                except Exception as save_error:
+                    st.error(
+                        f"Could not save sales history: {save_error}"
+                    )
 
         else:
             st.info(
