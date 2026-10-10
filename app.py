@@ -268,3 +268,52 @@ if st.button("Scan all countries", type="primary"):
     )
 
     st.caption("Prices are live API market offers at scan time. Gold conversion is an estimate based on the currency market's best returned rate.")
+st.subheader("DEBUG — Recent transaction pages")
+
+try:
+    countries = get_countries()
+
+    country_names = {
+        country["name"]: country["id"]
+        for country in countries
+    }
+
+    selected_country = st.selectbox(
+        "Choose a country to test",
+        list(country_names.keys())
+    )
+
+    country_id = country_names[selected_country]
+
+    for page in range(1, 4):
+        response = api_get(
+            "/country/currency-transactions",
+            {
+                "country_id": country_id,
+                "page": page
+            }
+        )
+
+        st.write(f"Page {page}")
+
+        if isinstance(response, dict):
+            records = response.get("data", [])
+            st.write("Pagination:", response.get("pagination", {}))
+        else:
+            records = response
+
+        if records:
+            st.write(
+                "Newest transaction:",
+                records[0].get("created_at")
+            )
+            st.write(
+                "Oldest transaction:",
+                records[-1].get("created_at")
+            )
+            st.write("Records returned:", len(records))
+        else:
+            st.write("No records returned.")
+
+except Exception as e:
+    st.error(f"Transaction test failed: {e}")
