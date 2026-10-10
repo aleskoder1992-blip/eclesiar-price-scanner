@@ -226,8 +226,7 @@ else:
         na_position="last"
     ).reset_index(drop=True)
 
-df.insert(0, "Rank", range(1, len(df) + 1))
-    df.insert(0, "Rank", range(1, len(df) + 1))
+        df.insert(0, "Rank", range(1, len(df) + 1))
 
     st.subheader(f'{selected["name"]} Q{selected.get("quality")} — cheapest by country')
     st.dataframe(df, use_container_width=True, hide_index=True)
