@@ -69,6 +69,8 @@ def main():
 
         if isinstance(payload, dict):
             records = payload.get("data", [])
+            print("API payload type:", type(payload).__name__)
+            print("API data type and preview:", type(records).__name__, repr(records)[:1000])
             pagination = payload.get("pagination", {})
             total_pages = int(pagination.get("total_pages", 1))
 
