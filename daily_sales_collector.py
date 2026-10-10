@@ -19,7 +19,7 @@ day_start = datetime.combine(
 day_end = day_start + timedelta(days=1)
 
 session = requests.Session()
-
+session.headers.update({"Authorization": f"Bearer {API_KEY}"})
 
 def get_transactions(page):
     response = session.get(
