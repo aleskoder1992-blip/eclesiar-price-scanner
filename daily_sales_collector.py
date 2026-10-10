@@ -65,40 +65,39 @@ def main():
     reached_day_start = False
 
     while not reached_day_start:
-    
-    payload = get_transactions(page)
+        payload = get_transactions(page)
 
-    if isinstance(payload, dict):
-        print("API payload type:", type(payload).__name__)
+        if isinstance(payload, dict):
+            print("API payload type:", type(payload).__name__)
 
-        # Handle the nested API response.
-        if isinstance(payload.get("data"), dict):
-            response_data = payload["data"]
-        else:
-            response_data = payload
+            # Handle the nested API response.
+            if isinstance(payload.get("data"), dict):
+                response_data = payload["data"]
+            else:
+                response_data = payload
 
-        records = response_data.get("data", [])
+            records = response_data.get("data", [])
 
-        print("API data type:", type(records).__name__)
-        print("Records preview:", repr(records)[:500])
+            print("API data type:", type(records).__name__)
+            print("Records preview:", repr(records)[:500])
 
-        pagination = response_data.get(
-            "pagination",
-            payload.get("pagination", {})
+            pagination = response_data.get(
+                "pagination",
+                payload.get("pagination", {})
         )
 
-        total_pages = int(pagination.get("total_pages", 1))
+            total_pages = int(pagination.get("total_pages", 1))
 
-        print("Current page:", page)
-        print("Total pages:", total_pages)
+            print("Current page:", page)
+            print("Total pages:", total_pages)
 
-    elif isinstance(payload, list):
-        records = payload
-        total_pages = 1
+        elif isinstance(payload, list):
+            records = payload
+            total_pages = 1
 
-    else:
-        raise RuntimeError(
-            f"Unexpected API response type: {type(payload).__name__}"
+        else:
+            raise RuntimeError(
+                f"Unexpected API response type: {type(payload).__name__}"
         )
 
 
