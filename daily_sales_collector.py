@@ -71,9 +71,15 @@ def main():
             records = payload.get("data", [])
             pagination = payload.get("pagination", {})
             total_pages = int(pagination.get("total_pages", 1))
-        else:
+
+        elif isinstance(payload, list):
             records = payload
             total_pages = 1
+
+        else:
+            raise RuntimeError(
+                f"Unexpected API response type: {type(payload).__name__}"
+            )
 
         if not records:
             break
