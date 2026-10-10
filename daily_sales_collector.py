@@ -73,7 +73,7 @@ def main():
             print("API payload type:", type(payload).__name__)
             print("API data type:", type(records).__name__)
 
-        if isinstance(records, dict):
+            if isinstance(records, dict):
                 print("Nested data keys:", list(records.keys()))
                 records = records.get("data", [])
 
@@ -88,7 +88,7 @@ def main():
             total_pages = 1
 
         else:
-        raise RuntimeError(
+            raise RuntimeError(
             f"Unexpected API response type: {type(payload).__name__}"
         )
 
