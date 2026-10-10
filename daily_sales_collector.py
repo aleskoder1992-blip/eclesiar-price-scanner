@@ -67,10 +67,19 @@ def main():
     while not reached_day_start:
         payload = get_transactions(page)
 
+        ```
         if isinstance(payload, dict):
             records = payload.get("data", [])
             print("API payload type:", type(payload).__name__)
-            print("API data type and preview:", type(records).__name__, repr(records)[:1000])
+            print("API data type:", type(records).__name__)
+
+        if isinstance(records, dict):
+                print("Nested data keys:", list(records.keys()))
+                records = records.get("data", [])
+
+            print("Records type after parsing:", type(records).__name__)
+            print("Records preview:", repr(records)[:500])
+
             pagination = payload.get("pagination", {})
             total_pages = int(pagination.get("total_pages", 1))
 
@@ -79,9 +88,11 @@ def main():
             total_pages = 1
 
         else:
-            raise RuntimeError(
-                f"Unexpected API response type: {type(payload).__name__}"
-            )
+        raise RuntimeError(
+            f"Unexpected API response type: {type(payload).__name__}"
+        )
+```
+
 
         if not records:
             break
