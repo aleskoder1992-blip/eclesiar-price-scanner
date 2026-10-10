@@ -6,7 +6,7 @@ from datetime import datetime, timedelta, timezone
 SUPABASE_URL = os.environ["SUPABASE_URL"].rstrip("/")
 SUPABASE_KEY = os.environ["SUPABASE_KEY"]
 
-ECLESIAR_API = "https://eclesiar.com/api"
+ECLESIAR_API = "https://api.eclesiar.com"
 COUNTRY_ID = 2
 COUNTRY_NAME = "United Kingdom"
 
