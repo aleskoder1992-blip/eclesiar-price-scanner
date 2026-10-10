@@ -124,16 +124,17 @@ def get_gold_rate(currency_id):
     })
 
     # TEMPORARY DEBUG
-    st.write("Currency ID:", currency_id)
-    st.write("Currency market response:", offers[:3])
+    # TEMPORARY DEBUG
+if currency_id == 35:
+    st.write("🇿🇦 SOUTH AFRICA — ZAR currency ID:", currency_id)
 
-    if not offers:
-        return None
+if not offers:
+    return None
 
-    st.write("DEBUG — First offer rate:", offers[0].get("rate"))
-    st.write("DEBUG — First offer amount:", offers[0].get("amount"))
-    st.write("DEBUG — First offer owner:", offers[0].get("owner", {}).get("name"))
-    return float(offers[0]["rate"])
+if currency_id == 35:
+    st.write("🇿🇦 SOUTH AFRICA — ZAR exchange rate:", offers[0].get("rate"))
+
+return float(offers[0]["rate"])
 
 try:
     items = get_items()
