@@ -268,7 +268,7 @@ if st.button("Scan all countries", type="primary"):
     )
 
     st.caption("Prices are live API market offers at scan time. Gold conversion is an estimate based on the currency market's best returned rate.")
-st.subheader("DEBUG — Recent transaction pages")
+st.subheader("DEBUG — Full transaction records")
 
 try:
     countries = get_countries()
@@ -279,41 +279,38 @@ try:
     }
 
     selected_country = st.selectbox(
-        "Choose a country to test",
-        list(country_names.keys())
+        "Choose a country to inspect",
+        list(country_names.keys()),
+        key="debug_transaction_country"
     )
 
     country_id = country_names[selected_country]
 
-    for page in range(1, 4):
-        response = api_get(
-            "/country/currency-transactions",
-            {
-                "country_id": country_id,
-                "page": page
-            }
-        )
+    response = api_get(
+        "/country/currency-transactions",
+        {
+            "country_id": country_id,
+            "page": 1
+        }
+    )
 
-        st.write(f"Page {page}")
+    if isinstance(response, dict):
+        records = response.get("data", [])
+    else:
+        records = response
 
-        if isinstance(response, dict):
-            records = response.get("data", [])
-            st.write("Pagination:", response.get("pagination", {}))
-        else:
-            records = response
+    market_purchases = [
+        record
+        for record in records
+        if record.get("description") == "Items bought in the market"
+    ]
 
-        if records:
-            st.write(
-                "Newest transaction:",
-                records[0].get("created_at")
-            )
-            st.write(
-                "Oldest transaction:",
-                records[-1].get("created_at")
-            )
-            st.write("Records returned:", len(records))
-        else:
-            st.write("No records returned.")
+    st.write("Market purchase records found:", len(market_purchases))
+
+    if market_purchases:
+        st.json(market_purchases[:3])
+    else:
+        st.warning("No market purchases found on page 1.")
 
 except Exception as e:
     st.error(f"Transaction test failed: {e}")
