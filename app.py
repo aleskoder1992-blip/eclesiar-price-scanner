@@ -316,6 +316,32 @@ if st.button("Scan all countries", type="primary"):
 
     st.caption("Prices are live API market offers at scan time. Gold conversion is an estimate based on the currency market's best returned rate.")
 st.subheader("Market Sales Activity")
+with st.expander("Supabase Connection Test"):
+    if st.button("Test Supabase Connection"):
+        try:
+            supabase_url = st.secrets["SUPABASE_URL"].rstrip("/")
+            supabase_key = st.secrets["SUPABASE_KEY"]
+
+            response = requests.get(
+                f"{supabase_url}/rest/v1/market_sales_history",
+                headers={
+                    "apikey": supabase_key,
+                    "Authorization": f"Bearer {supabase_key}"
+                },
+                params={"select": "id", "limit": "1"},
+                timeout=15
+            )
+
+            if response.status_code == 200:
+                st.success("Connected to Supabase successfully!")
+            else:
+                st.error(
+                    f"Connection failed ({response.status_code}): "
+                    f"{response.text[:300]}"
+                )
+
+        except Exception as e:
+            st.error(f"Connection test failed: {e}")
 
 import pandas as pd
 from datetime import datetime, timedelta
