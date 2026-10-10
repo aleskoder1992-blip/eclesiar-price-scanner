@@ -119,7 +119,7 @@ def scan_item(item_id, min_qty=1, include_inactive_markets=False):
 def get_gold_rate(currency_id):
     offers = api_get("/market/coin/get", {
         "currency_id": currency_id,
-        "transaction": "BUY",
+        "transaction": "SELL",
         "page": 1
     })
 
@@ -221,7 +221,7 @@ if st.button("Scan all countries", type="primary"):
             cid = currency_id_by_name.get(row["Currency"])
             rate = gold_rates.get(cid) if cid else None
             if rate and rate > 0 and pd.notna(row["Price / item"]):
-                return row["Price / item"] * rate
+                return row["Price / item"] / rate
             return None
 
         df["Approx. Gold / item"] = df.apply(to_gold, axis=1)
