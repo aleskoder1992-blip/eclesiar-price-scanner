@@ -209,7 +209,7 @@ if st.button("Scan all countries", type="primary"):
             c.get("currency", {}).get("name"): c.get("currency", {}).get("id")
             for c in countries
         }
-st.write(
+        st.write(
     "DEBUG — ZAR currency:",
     [
         c.get("currency")
