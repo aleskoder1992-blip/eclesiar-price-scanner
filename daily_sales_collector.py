@@ -87,7 +87,7 @@ def main():
             timestamp = record.get("created_at")
 
             if not timestamp:
-                 continue
+                continue
 
             try:
                 transaction_time = datetime.fromisoformat(
