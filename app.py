@@ -34,6 +34,52 @@ def api_get(path, params=None):
     payload = r.json()
     return payload.get("data", [])
 
+def save_sales_history(rows, recorded_date, country_id, country_name):
+    supabase_url = st.secrets["SUPABASE_URL"].rstrip("/")
+    supabase_key = st.secrets["SUPABASE_KEY"]
+
+    url = f"{supabase_url}/rest/v1/market_sales_history"
+
+    headers = {
+        "apikey": supabase_key,
+        "Authorization": f"Bearer {supabase_key}",
+        "Content-Type": "application/json",
+        "Prefer": "resolution=merge-duplicates,return=minimal"
+    }
+
+    records = []
+
+    for row in rows:
+        records.append({
+            "recorded_date": recorded_date,
+            "country_id": int(country_id),
+            "country_name": country_name,
+            "item_id": int(row["item_id"]),
+            "item_name": str(row["item_name"]),
+            "quality": row["quality"],
+            "units_purchased": int(row["units_purchased"]),
+            "purchase_transactions": int(row["purchase_transactions"])
+        })
+
+    if not records:
+        return 0
+
+    response = requests.post(
+        url,
+        headers=headers,
+        params={"on_conflict": "recorded_date,country_id,item_id"},
+        json=records,
+        timeout=30
+    )
+
+    if not response.ok:
+        raise RuntimeError(
+            f"Supabase save failed ({response.status_code}): "
+            f"{response.text}"
+        )
+
+    return len(records)
+
 @st.cache_data(ttl=300)
 def get_items():
     rows = []
