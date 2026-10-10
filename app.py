@@ -117,15 +117,19 @@ def scan_item(item_id, min_qty=1, include_inactive_markets=False):
 
 @st.cache_data(ttl=300)
 def get_gold_rate(currency_id):
-    # Eclesiar's currency market is quoted as country-currency per gold.
-    # We use the cheapest BUY-gold offer returned by the API.
     offers = api_get("/market/coin/get", {
         "currency_id": currency_id,
         "transaction": "BUY",
         "page": 1
     })
+
+    # TEMPORARY DEBUG
+    st.write("Currency ID:", currency_id)
+    st.write("Currency market response:", offers[:3])
+
     if not offers:
         return None
+
     return float(offers[0]["rate"])
 
 try:
