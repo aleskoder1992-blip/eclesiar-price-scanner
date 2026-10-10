@@ -136,8 +136,23 @@ except Exception as e:
     st.error(str(e))
     st.stop()
 
+# Remove duplicate items, keeping the lowest ID for each name and quality
+unique_items = {}
+
+for item in items:
+    if not item.get("name"):
+        continue
+
+    key = (
+        item["name"].strip().lower(),
+        int(item.get("quality", 0))
+    )
+
+    if key not in unique_items or int(item.get("id", 999999)) < int(unique_items[key].get("id", 999999)):
+        unique_items[key] = item
+
 choices = sorted(
-    [x for x in items if x.get("name")],
+    list(unique_items.values()),
     key=lambda x: (x["name"].lower(), -int(x.get("quality", 0)))
 )
 
