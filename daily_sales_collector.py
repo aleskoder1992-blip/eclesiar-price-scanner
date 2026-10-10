@@ -125,7 +125,9 @@ def main():
             if transaction_time < day_start:
                 reached_day_start = True
                 break
-
+            if record.get("description") == "Items bought in the market":
+                print("MARKET PURCHASE TIME:", transaction_time)
+                print("COLLECTION PERIOD:", day_start, "to", day_end)
             if transaction_time >= day_end:
                 continue
             description = record.get("description", "")
