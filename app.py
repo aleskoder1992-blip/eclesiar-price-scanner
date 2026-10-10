@@ -163,10 +163,23 @@ with col2:
     include_unavailable = st.checkbox("Include unavailable countries", value=False)
 
 if st.button("Scan all countries", type="primary"):
-    df = scan_item(selected["id"], min_qty, include_unavailable)
+    try:
+        df = scan_item(selected["id"], min_qty, include_unavailable)
 
-    if df.empty:
-        st.warning("No matching offers found.")
+        if df.empty:
+            st.warning("No matching offers found.")
+            st.write("Debug information:")
+            st.write("Selected item:", selected)
+            st.write("Item ID:", selected["id"])
+            st.write("Minimum stock:", min_qty)
+            st.write("Countries loaded:", len(countries))
+            st.stop()
+
+        st.success(f"Found {len(df)} matching offers!")
+
+    except Exception as e:
+        st.error(f"Scanner error: {type(e).__name__}: {e}")
+        st.exception(e)
         st.stop()
 
     if do_gold:
