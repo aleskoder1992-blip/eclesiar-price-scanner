@@ -79,7 +79,7 @@ def main():
             break
 
             for record in records:
-            if not isinstance(record, dict):
+                if not isinstance(record, dict):
                 print("Unexpected record type:", type(record).__name__)
                 print("Unexpected record value:", repr(record)[:500])
                 raise RuntimeError("Unexpected transaction record format")
