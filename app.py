@@ -66,12 +66,16 @@ def scan_item(item_id, min_qty=1, include_inactive_markets=False):
         status.write(f"Scanning {country['name']} ({i}/{len(countries)})")
 
         try:
+                        # Fetch market offers for this country and item
             offers = api_get("/market/items/get", {
                 "country_id": cid,
                 "item_id": item_id,
                 "page": 1
             })
 
+            # TEMPORARY DEBUG: display the first country's API response
+            if i == 1:
+                st.write("DEBUG — First market API response:", offers)
             # API returns cheapest first. Find first offer with enough stock.
             offer = next((x for x in offers if float(x.get("amount", 0)) >= min_qty), None)
             if not offer:
