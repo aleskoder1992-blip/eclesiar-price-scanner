@@ -162,7 +162,8 @@ def main():
             break
 
         page += 1
-
+    print("DEBUG - Sales collected:", sales)
+    print("DEBUG - Transaction counts:", transactions_count)
     # Retrieve item names and qualities from the Eclesiar API.
     items_response = session.get(
         f"{ECLESIAR_API}/server/items",
