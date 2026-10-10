@@ -209,7 +209,14 @@ if st.button("Scan all countries", type="primary"):
             c.get("currency", {}).get("name"): c.get("currency", {}).get("id")
             for c in countries
         }
-
+st.write(
+    "DEBUG — ZAR currency:",
+    [
+        c.get("currency")
+        for c in countries
+        if c.get("currency", {}).get("name") == "ZAR"
+    ]
+)
         def to_gold(row):
             cid = currency_id_by_name.get(row["Currency"])
             rate = gold_rates.get(cid) if cid else None
