@@ -208,10 +208,25 @@ if st.button("Scan all countries", type="primary"):
 
         df["Approx. Gold / item"] = df.apply(to_gold, axis=1)
 
+   # Always rank by Gold price when Gold conversion is enabled.
+if do_gold and "Approx. Gold / item" in df.columns:
+    df["Approx. Gold / item"] = pd.to_numeric(
+        df["Approx. Gold / item"], errors="coerce"
+    )
+
     df = df.sort_values(
-        "Approx. Gold / item" if do_gold and "Approx. Gold / item" in df.columns else "Price / item",
+        by="Approx. Gold / item",
+        ascending=True,
         na_position="last"
     ).reset_index(drop=True)
+else:
+    df = df.sort_values(
+        by="Price / item",
+        ascending=True,
+        na_position="last"
+    ).reset_index(drop=True)
+
+df.insert(0, "Rank", range(1, len(df) + 1))
     df.insert(0, "Rank", range(1, len(df) + 1))
 
     st.subheader(f'{selected["name"]} Q{selected.get("quality")} — cheapest by country')
