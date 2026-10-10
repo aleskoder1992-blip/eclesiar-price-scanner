@@ -67,7 +67,7 @@ def main():
     while not reached_day_start:
         payload = get_transactions(page)
 
-        ```
+        
         if isinstance(payload, dict):
             records = payload.get("data", [])
             print("API payload type:", type(payload).__name__)
@@ -91,7 +91,7 @@ def main():
         raise RuntimeError(
             f"Unexpected API response type: {type(payload).__name__}"
         )
-```
+
 
 
         if not records:
