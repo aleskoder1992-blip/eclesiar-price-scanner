@@ -465,7 +465,7 @@ try:
     "Average units / transaction": round(
         quantity / transactions_count[item_id], 2
     )
-}))
+})
 
             df_sales = pd.DataFrame(rows)
             df_sales = df_sales.sort_values(
