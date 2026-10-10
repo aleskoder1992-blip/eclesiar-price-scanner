@@ -2,11 +2,27 @@ name: Daily Eclesiar Sales Collector
 
 on:
   workflow_dispatch:
+  schedule:
+    - cron: "15 2 * * *"
 
 jobs:
-  test:
+  collect-sales:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Test workflow
-        run: echo "GitHub Actions is working!"
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install requests
+
+      - name: Run UK sales collector
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+        run: python daily_sales_collector.py
