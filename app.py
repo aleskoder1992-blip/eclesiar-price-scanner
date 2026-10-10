@@ -452,14 +452,19 @@ try:
                 item = item_lookup.get(int(item_id), {})
 
                 rows.append({
-                    "Item": item.get("name", f"Unknown item ({item_id})"),
-                    "Quality": item.get("quality", "Unknown"),
-                    "Units purchased": quantity,
-                    "Purchase transactions": transactions_count[item_id],
-                    "Average units / transaction": round(
-                        quantity / transactions_count[item_id], 2
-                    )
-                })
+    "item_id": int(item_id),
+    "item_name": item.get("name", f"Unknown item ({item_id})"),
+    "quality": item.get("quality"),
+    "units_purchased": quantity,
+    "purchase_transactions": transactions_count[item_id],
+    "Item": item.get("name", f"Unknown item ({item_id})"),
+    "Quality": item.get("quality", "Unknown"),
+    "Units purchased": quantity,
+    "Purchase transactions": transactions_count[item_id],
+    "Average units / transaction": round(
+        quantity / transactions_count[item_id], 2
+    )
+}))
 
             df_sales = pd.DataFrame(rows)
             df_sales = df_sales.sort_values(
