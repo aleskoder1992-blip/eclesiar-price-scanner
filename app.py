@@ -130,6 +130,9 @@ def get_gold_rate(currency_id):
     if not offers:
         return None
 
+    st.write("DEBUG — First offer rate:", offers[0].get("rate"))
+    st.write("DEBUG — First offer amount:", offers[0].get("amount"))
+    st.write("DEBUG — First offer owner:", offers[0].get("owner", {}).get("name"))
     return float(offers[0]["rate"])
 
 try:
