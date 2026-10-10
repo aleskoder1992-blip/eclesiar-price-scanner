@@ -126,8 +126,10 @@ def main():
 
             if transaction_time >= day_end:
                 continue
-
-            if record.get("description") != "Items bought in the market":
+            description = record.get("description", "")
+            if description != "Items bought in the market":
+                if description:
+                    print(f"Skipping transaction: {description}")
                 continue
 
             for complex_transaction in record.get(
