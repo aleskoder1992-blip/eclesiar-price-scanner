@@ -268,7 +268,10 @@ if st.button("Scan all countries", type="primary"):
     )
 
     st.caption("Prices are live API market offers at scan time. Gold conversion is an estimate based on the currency market's best returned rate.")
-st.subheader("DEBUG — Full transaction records")
+st.subheader("Market Sales Activity")
+
+import pandas as pd
+from datetime import datetime, timedelta
 
 try:
     countries = get_countries()
@@ -276,41 +279,151 @@ try:
     country_names = {
         country["name"]: country["id"]
         for country in countries
+        if country.get("name") and country.get("id") is not None
     }
 
     selected_country = st.selectbox(
-        "Choose a country to inspect",
+        "Country",
         list(country_names.keys()),
-        key="debug_transaction_country"
+        key="sales_country"
     )
 
+    period = st.selectbox(
+        "Sales period",
+        ["Last 24 hours", "Last 7 days"],
+        key="sales_period"
+    )
+
+    hours = 24 if period == "Last 24 hours" else 168
+    cutoff = datetime.now() - timedelta(hours=hours)
     country_id = country_names[selected_country]
 
-    response = api_get(
-        "/country/currency-transactions",
-        {
-            "country_id": country_id,
-            "page": 1
-        }
-    )
+    if st.button("Calculate sales", key="calculate_sales"):
+        sales = {}
+        transactions_count = {}
+        page = 1
+        max_pages = 500
+        records_checked = 0
+        reached_cutoff = False
 
-    if isinstance(response, dict):
-        records = response.get("data", [])
-    else:
-        records = response
+        progress = st.progress(0)
+        status = st.empty()
 
-    market_purchases = [
-        record
-        for record in records
-        if record.get("description") == "Items bought in the market"
-    ]
+        while page <= max_pages and not reached_cutoff:
+            response = api_get(
+                "/country/currency-transactions",
+                {
+                    "country_id": country_id,
+                    "page": page
+                }
+            )
 
-    st.write("Market purchase records found:", len(market_purchases))
+            if isinstance(response, dict):
+                records = response.get("data", [])
+                pagination = response.get("pagination", {})
+                total_pages = int(pagination.get("total_pages", 1))
+            else:
+                records = response
+                total_pages = 1
 
-    if market_purchases:
-        st.json(market_purchases[:3])
-    else:
-        st.warning("No market purchases found on page 1.")
+            if not records:
+                break
+
+            for record in records:
+                timestamp = record.get("created_at")
+
+                if not timestamp:
+                    continue
+
+                try:
+                    transaction_time = datetime.fromisoformat(timestamp)
+                except ValueError:
+                    continue
+
+                if transaction_time < cutoff:
+                    reached_cutoff = True
+                    break
+
+                if record.get("description") != "Items bought in the market":
+                    continue
+
+                for complex_transaction in record.get(
+                    "complex_transactions", []
+                ):
+                    for item_log in complex_transaction.get("item_logs", []):
+                        if item_log.get("description") != "Items bought in the market":
+                            continue
+
+                        item_id = item_log.get("item_id")
+                        quantity = int(item_log.get("quantity", 0))
+
+                        if item_id is None or quantity <= 0:
+                            continue
+
+                        sales[item_id] = sales.get(item_id, 0) + quantity
+                        transactions_count[item_id] = (
+                            transactions_count.get(item_id, 0) + 1
+                        )
+
+            records_checked += len(records)
+            status.write(
+                f"Checking page {page} of {total_pages:,} "
+                f"({records_checked:,} records examined)"
+            )
+
+            progress.progress(
+                min(page / max(total_pages, 1), 1.0)
+            )
+
+            if reached_cutoff or page >= total_pages:
+                break
+
+            page += 1
+
+        progress.empty()
+        status.empty()
+
+        if sales:
+            item_lookup = {
+                int(item["id"]): item
+                for item in get_items()
+                if item.get("id") is not None
+            }
+
+            rows = []
+
+            for item_id, quantity in sales.items():
+                item = item_lookup.get(int(item_id), {})
+
+                rows.append({
+                    "Item": item.get("name", f"Unknown item ({item_id})"),
+                    "Quality": item.get("quality", "Unknown"),
+                    "Units purchased": quantity,
+                    "Purchase transactions": transactions_count[item_id],
+                    "Average units / transaction": round(
+                        quantity / transactions_count[item_id], 2
+                    )
+                })
+
+            df_sales = pd.DataFrame(rows)
+            df_sales = df_sales.sort_values(
+                "Units purchased",
+                ascending=False
+            ).reset_index(drop=True)
+
+            df_sales.insert(0, "Rank", range(1, len(df_sales) + 1))
+
+            st.success(
+                f"Found {len(df_sales)} items with recorded purchases. "
+                f"Examined {records_checked:,} transaction records."
+            )
+
+            st.dataframe(df_sales, use_container_width=True, hide_index=True)
+
+        else:
+            st.info(
+                "No matching purchases were found in the records checked."
+            )
 
 except Exception as e:
-    st.error(f"Transaction test failed: {e}")
+    st.error(f"Sales tracker failed: {e}")
